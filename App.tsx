@@ -1,3 +1,4 @@
+import 'preact/debug';
 import {useEffect, useMemo} from 'react';
 import {
   retain,
@@ -8,12 +9,15 @@ import {
 import {
   RemoteReceiver,
   RemoteRootRenderer,
+  RemoteFragmentRenderer,
   createRemoteComponentRenderer,
-} from './RemoteReceiver.tsx';
+} from '@lemonmade/remote-ui-react/host';
 
-const createWorker = createThreadWorker(() => import('./worker.ts'));
+const createWorker = createThreadWorker(() => import('./worker.tsx'));
 
 const components = new Map([
+  ['remote-fragment', RemoteFragmentRenderer],
+  ['ui-icon', createRemoteComponentRenderer(Icon)],
   ['ui-button', createRemoteComponentRenderer(Button)],
 ]);
 
@@ -28,10 +32,15 @@ export default function App() {
   return <RemoteRootRenderer receiver={receiver} components={components} />;
 }
 
-function Button({children, onPress, ...props}) {
+function Button({children, onPress, icon}) {
   return (
-    <button style={{background: 'red'}} onClick={() => props._onPress()}>
+    <button style={{background: 'red'}} onClick={() => onPress?.()}>
       {children}
+      {icon && <span style={{marginInlineStart: '4px'}}>{icon}</span>}
     </button>
   );
+}
+
+function Icon({source, slot}) {
+  return <span>Icon {source}</span>;
 }

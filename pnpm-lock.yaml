@@ -1,7 +1,8 @@
 lockfileVersion: 5.3
 
 specifiers:
-  '@lemonmade/remote-ui': ^0.1.3
+  '@lemonmade/remote-ui': ^0.1.9
+  '@lemonmade/remote-ui-react': ^0.1.1
   '@quilted/browserslist-config': ^0.1.0
   '@quilted/craft': ^0.1.0
   '@quilted/eslint-config': ^0.1.0
@@ -17,7 +18,8 @@ specifiers:
   typescript: ^5.0.0
 
 dependencies:
-  '@lemonmade/remote-ui': 0.1.3
+  '@lemonmade/remote-ui': 0.1.9
+  '@lemonmade/remote-ui-react': 0.1.1_@quilted+react@18.2.2
 
 devDependencies:
   '@quilted/browserslist-config': 0.1.9
@@ -2310,8 +2312,22 @@ packages:
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: true
 
-  /@lemonmade/remote-ui/0.1.3:
-    resolution: {integrity: sha512-ZkuHgEFmWAeW2c1GW8AWxHg1LExAsSYsOk8zAxrK3KoWGJujTUSRYlFSF6yxO/zxMjZIM22A6xNDTRnSZm1CdA==}
+  /@lemonmade/remote-ui-react/0.1.1_@quilted+react@18.2.2:
+    resolution: {integrity: sha512-OZ6aW8aNB4tuoE4ihIqfxOwN1IFsvfj0wkI0QZMmO4OGQTcxT0ODJ6/fXxzfmqj1f9cJ8JeyukWSuo1XLbUspA==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+    dependencies:
+      '@lemonmade/remote-ui': 0.1.9
+      '@types/react': 18.2.0
+      react: /@quilted/react/18.2.2
+    dev: false
+
+  /@lemonmade/remote-ui/0.1.9:
+    resolution: {integrity: sha512-XlNUkd/ksOMQJiXv5xLTo6zZMcms3O2p85rKIf+zxhFBTFUCSVBeLtYV4C4XorqgxxWG6Q3X3VyHCyCePLcPFg==}
     engines: {node: '>=14.0.0'}
     dev: false
 
@@ -2785,7 +2801,7 @@ packages:
     dependencies:
       '@types/react-dom': 18.2.1
       preact: 10.13.2
-      preact-render-to-string: 6.0.2_preact@10.13.2
+      preact-render-to-string: 6.0.3_preact@10.13.2
     dev: true
 
   /@quilted/react-graphql/0.4.53_@quilted+react@18.2.2:
@@ -3387,7 +3403,6 @@ packages:
 
   /@types/prop-types/15.7.5:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
-    dev: true
 
   /@types/react-dom/18.2.1:
     resolution: {integrity: sha512-8QZEV9+Kwy7tXFmjJrp3XUKQSs9LTnE0KnoUb0YCguWBiNW0Yfb2iBMYZ08WPg35IR6P3Z0s00B15SwZnO26+w==}
@@ -3401,7 +3416,6 @@ packages:
       '@types/prop-types': 15.7.5
       '@types/scheduler': 0.16.3
       csstype: 3.1.2
-    dev: true
 
   /@types/resolve/1.20.2:
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
@@ -3409,7 +3423,6 @@ packages:
 
   /@types/scheduler/0.16.3:
     resolution: {integrity: sha512-5cJ8CB4yAx7BH1oMvdU0Jh9lrEXyPkar6F9G/ERswkCuvP4KQZfZkSjcMbAICCpQTN4OuZn8tz0HiKv9TGZgrQ==}
-    dev: true
 
   /@types/semver/7.3.13:
     resolution: {integrity: sha512-21cFJr9z3g5dW8B0CVI9g2O9beqaThGQ6ZFBqHfwhzLDKUxaqTIy3vnfah/UPkfOiF2pLq+tGz+W8RyCskuslw==}
@@ -4354,7 +4367,6 @@ packages:
 
   /csstype/3.1.2:
     resolution: {integrity: sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==}
-    dev: true
 
   /damerau-levenshtein/1.0.8:
     resolution: {integrity: sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA==}
@@ -7779,8 +7791,8 @@ packages:
       source-map-js: 1.0.2
     dev: true
 
-  /preact-render-to-string/6.0.2_preact@10.13.2:
-    resolution: {integrity: sha512-/dls6xmcFc8PvnCVke5Hu5ll70pZZu+jZuvw3i/ya2CNu6B0ev9F937+oFyzdlNKVp68III89oYMbE6dcmuyRA==}
+  /preact-render-to-string/6.0.3_preact@10.13.2:
+    resolution: {integrity: sha512-UUP+EtmLw5ns0fT9C7+CTdLawm1wLmlrZ6WKzJ4Jwhb4EBu4vy5ufIZKlrfvWNnPl1JFoJzZwzfKs97H4N0Vug==}
     peerDependencies:
       preact: '>=10'
     dependencies:
