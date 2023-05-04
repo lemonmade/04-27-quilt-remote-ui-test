@@ -1,91 +1,64 @@
 import '@lemonmade/remote-ui/polyfill';
-import {
-  RemoteElement,
-  RemoteRootElement,
-  type RemoteMutationCallback,
-  type RemoteElementSlotsDefinition,
-  type RemoteElementPropertiesDefinition,
-  type RemoteSlotsFromElementConstructor,
-  type RemotePropertiesFromElementConstructor,
-} from '@lemonmade/remote-ui/elements';
-import {retain} from '@quilted/quilt/threads';
 
-import {
-  h,
-  Fragment,
-  render as renderPreact,
-  isValidElement,
-  type ComponentType,
-} from 'preact';
-import type {ReactNode} from 'react';
+import {retain} from '@quilted/quilt/threads';
+import type {RemoteMutationCallback} from '@lemonmade/remote-ui';
+
+import {h, Fragment, render as renderPreact} from 'preact';
 import {useState, useEffect} from 'preact/hooks';
 
-// TODO: package this up
-class RemoteFragmentElement extends RemoteElement {}
+// import {createApp, h as vueH} from 'vue3';
 
-export interface ButtonProps {
-  name: string;
-  icon?: string;
-  onPress?(): void;
-}
-
-interface ButtonSlots {
-  icon?: true;
-}
-
-export class ButtonElement extends RemoteElement<ButtonProps, ButtonSlots> {
-  static readonly remoteSlots: RemoteElementSlotsDefinition<ButtonSlots> = {
-    icon: {},
-  };
-
-  static readonly remoteProperties: RemoteElementPropertiesDefinition<ButtonProps> =
-    {
-      name: {attribute: true},
-      icon: {attribute: true},
-      onPress: {attribute: true, callback: true},
-    };
-}
-
-const Button = createRemoteReactComponent('ui-button', ButtonElement);
-
-export interface IconProps {
-  source: string;
-}
-
-export class IconElement extends RemoteElement<IconProps> {
-  static readonly remoteProperties: RemoteElementPropertiesDefinition<IconProps> =
-    {
-      source: {attribute: true},
-    };
-}
-
-const Icon = createRemoteReactComponent('ui-icon', IconElement);
-
-customElements.define('ui-button', ButtonElement);
-customElements.define('ui-icon', IconElement);
-
-customElements.define('remote-fragment', RemoteFragmentElement);
-customElements.define('remote-root', RemoteRootElement);
+import {Button, Icon} from './components.ts';
 
 export function render(callback: RemoteMutationCallback) {
   retain(callback);
 
-  const root = document.createElement('remote-root') as RemoteRootElement;
+  const root = document.createElement('remote-root');
   root.connect(callback);
 
-  renderPreact(h(MyComponent, null), root);
+  const preactRoot = document.createElement('ui-view');
+  root.append(preactRoot);
+  renderPreact(h(MyPreactComponent, null), preactRoot);
 
-  // let count = 0;
-  // root.innerHTML = `Hello ${count} <my-element name="World">${Date.now()}</my-element>`;
-  // root.children[0].onPress = () =>
-  //   (root.children[0].textContent = String(Date.now()));
-
-  // setInterval(() => {
-  //   root.childNodes[0].textContent = `Hello ${++count} `;
-  // }, 1000);
+  // const vueRoot = document.createElement('ui-view');
+  // root.append(vueRoot);
+  // createApp({
+  //   mounted() {
+  //     setInterval(() => {
+  //       this.count += 1;
+  //     }, 1000);
+  //   },
+  //   data() {
+  //     return {
+  //       date: Date.now(),
+  //       count: 0,
+  //     };
+  //   },
+  //   methods: {
+  //     updateDate() {
+  //       this.date = Date.now();
+  //     },
+  //   },
+  //   render() {
+  //     return [
+  //       `Hello ${this.count} `,
+  //       vueH(
+  //         'ui-button',
+  //         {
+  //           name: 'World',
+  //           icon: vueH('ui-icon', {source: 'baz'}),
+  //           onPress: () => {
+  //             this.date = Date.now();
+  //           },
+  //         },
+  //         String(this.date),
+  //       ),
+  //     ];
+  //   },
+  // }).mount(vueRoot);
 }
 
-function MyComponent() {
+function MyPreactComponent() {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
@@ -105,9 +78,8 @@ function MyComponent() {
     h(
       Button,
       {
-        // name: 'World',
         name: 'World',
-        icon: h(Icon, {source: 'baz', slot: 'icon'}),
+        icon: h(Icon, {source: 'baz'}),
         onPress: () => {
           setDate(Date.now());
         },
@@ -115,100 +87,4 @@ function MyComponent() {
       String(date),
     ),
   );
-}
-
-export type RemoteComponentType<
-  Properties extends Record<string, any> = {},
-  Slots extends Record<string, any> = {},
-> = ComponentType<RemoteComponentProps<Properties, Slots>>;
-
-export type RemoteComponentProps<
-  Properties extends Record<string, any> = {},
-  Slots extends Record<string, any> = {},
-> = Omit<Properties, keyof Slots> & {
-  [Slot in keyof Slots]: ReactNode;
-};
-
-export type RemoteComponentPropsFromElementConstructor<
-  ElementConstructor extends {new (): RemoteElement<any, any>},
-> = RemoteComponentProps<
-  RemotePropertiesFromElementConstructor<ElementConstructor>,
-  RemoteSlotsFromElementConstructor<ElementConstructor>
->;
-
-export type RemoteComponentTypeFromElementConstructor<
-  ElementConstructor extends {new (): RemoteElement<any, any>},
-> = RemoteComponentType<
-  RemotePropertiesFromElementConstructor<ElementConstructor>,
-  RemoteSlotsFromElementConstructor<ElementConstructor>
->;
-
-function createRemoteReactComponent<
-  Properties extends Record<string, any>,
-  Slots extends Record<string, any>,
->(
-  ElementName: string,
-  {
-    remoteProperties,
-    remoteSlots,
-  }: {
-    new (): RemoteElement<Properties, Slots>;
-    remoteProperties: RemoteElementPropertiesDefinition<Properties>;
-    remoteSlots: RemoteElementSlotsDefinition<Slots>;
-  },
-): RemoteComponentType<Properties, Slots> {
-  const propertyMap = new Map<string, string>();
-  const allowedSlots = new Set(remoteSlots ? Object.keys(remoteSlots) : []);
-
-  if (remoteProperties != null) {
-    for (const property of Object.keys(remoteProperties)) {
-      const descriptor = remoteProperties[property]!;
-
-      // Alias callbacks to `_`-prefixed names so that they don’t
-      // get converted into event listeners
-      if (descriptor.callback) {
-        propertyMap.set(property, `_${property}`);
-      }
-    }
-  }
-
-  const RemoteComponent: RemoteComponentType<Properties, Slots> =
-    propertyMap.size > 0 || allowedSlots.size > 0
-      ? function RemoteComponent(props) {
-          const updatedProps: Record<string, any> = {};
-          const children = toChildren(props.children);
-
-          for (const prop in props) {
-            const propValue = props[prop];
-
-            if (allowedSlots.has(prop) && isValidElement(propValue)) {
-              children.push(h('remote-fragment', {slot: prop}, propValue));
-              continue;
-            }
-
-            const propertyAlias = propertyMap.get(prop);
-
-            if (propertyAlias) {
-              updatedProps[propertyAlias] = propValue;
-            } else {
-              updatedProps[prop] = propValue;
-            }
-          }
-
-          return h(ElementName, updatedProps, ...children);
-        }
-      : function RemoteComponent(props) {
-          return h(ElementName, props);
-        };
-
-  RemoteComponent.displayName = `RemoteComponent(${ElementName})`;
-
-  return RemoteComponent;
-}
-
-// Simple version of React.Children.toArray()
-function toChildren(value: any) {
-  if (value == null) return [];
-  if (Array.isArray(value)) return value;
-  return [value];
 }
