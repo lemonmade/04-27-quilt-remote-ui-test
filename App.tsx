@@ -11,15 +11,11 @@ import {
   RemoteRootRenderer,
   RemoteFragmentRenderer,
   createRemoteComponentRenderer,
-  type RemoteComponentProps,
 } from '@lemonmade/remote-ui-react/host';
 
-import type {
-  ViewProps,
-  ButtonProps,
-  ButtonSlots,
-  IconProps,
-} from './components.ts';
+import {View} from './components/View.tsx';
+import {Button} from './components/Button.tsx';
+import {Icon} from './components/Icon.tsx';
 
 const createWorker = createThreadWorker(() => import('./worker.tsx'));
 
@@ -39,25 +35,4 @@ export default function App() {
   }, [worker, receiver]);
 
   return <RemoteRootRenderer receiver={receiver} components={components} />;
-}
-
-function View({children}: RemoteComponentProps<ViewProps>) {
-  return <div>{children}</div>;
-}
-
-function Button({
-  icon,
-  onPress,
-  children,
-}: RemoteComponentProps<ButtonProps, ButtonSlots>) {
-  return (
-    <button style={{background: 'red'}} onClick={() => onPress?.()}>
-      {children}
-      {icon && <span style={{marginInlineStart: '4px'}}>{icon}</span>}
-    </button>
-  );
-}
-
-function Icon({source}: RemoteComponentProps<IconProps>) {
-  return <span>Icon {source}</span>;
 }

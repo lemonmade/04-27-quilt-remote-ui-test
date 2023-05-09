@@ -3,12 +3,8 @@ import '@lemonmade/remote-ui/polyfill';
 import {retain} from '@quilted/quilt/threads';
 import type {RemoteMutationCallback} from '@lemonmade/remote-ui';
 
-import {h, Fragment, render as renderPreact} from 'preact';
-import {useState, useEffect} from 'preact/hooks';
-
-// import {createApp, h as vueH} from 'vue3';
-
-import {Button, Icon} from './components.ts';
+import {renderPreact, PreactSection} from './worker/preact.ts';
+import {renderSolid, SolidSection} from './worker/solid.ts';
 
 export function render(callback: RemoteMutationCallback) {
   retain(callback);
@@ -17,8 +13,12 @@ export function render(callback: RemoteMutationCallback) {
   root.connect(callback);
 
   const preactRoot = document.createElement('ui-view');
+  renderPreact(PreactSection, preactRoot);
   root.append(preactRoot);
-  renderPreact(h(MyPreactComponent, null), preactRoot);
+
+  const solidRoot = document.createElement('ui-view');
+  renderSolid(SolidSection, solidRoot);
+  root.append(solidRoot);
 
   // const vueRoot = document.createElement('ui-view');
   // root.append(vueRoot);
@@ -56,35 +56,4 @@ export function render(callback: RemoteMutationCallback) {
   //     ];
   //   },
   // }).mount(vueRoot);
-}
-
-function MyPreactComponent() {
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCount((count) => count + 1);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const [date, setDate] = useState(Date.now());
-
-  return h(
-    Fragment,
-    null,
-    `Hello ${count} `,
-    h(
-      Button,
-      {
-        name: 'World',
-        icon: h(Icon, {source: 'baz'}),
-        onPress: () => {
-          setDate(Date.now());
-        },
-      },
-      String(date),
-    ),
-  );
 }
